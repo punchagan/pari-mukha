@@ -3,15 +3,16 @@
             [om.dom :as dom :include-macros true]
             [cljsjs.react-leaflet]))
 
-(def india-coords #js [22 81])
-(def osm-attribution "&copy; <a href=http://osm.org/copyright>OpenStreetMap</a> contributors")
-(def pari-attribution "&copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>")
-(def tile-url "http://{s}.tile.osm.org/{z}/{x}/{y}.png")
-
 (def Map (js/React.createFactory js/ReactLeaflet.Map))
 (def TileLayer (js/React.createFactory js/ReactLeaflet.TileLayer))
 (def GeoJson (js/React.createFactory js/ReactLeaflet.GeoJson))
 (def ImageOverlay (js/React.createFactory js/ReactLeaflet.ImageOverlay))
+
+(def india-coords #js [22 81])
+(def india-bounds (js/L.latLngBounds (js/L.latLng 37 67) (js/L.latLng 0 98)))
+(def osm-attribution "Map tiles by <a href=http://stamen.com>Stamen Design</a>, <a href=http://creativecommons.org/licenses/by/3.0>CC BY 3.0</a> &mdash; Map data &copy; <a href=http://www.openstreetmap.org/copyright>OpenStreetMap</a>")
+(def pari-attribution "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>")
+(def tile-url "http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}")
 
 (def faces [{:occupation "Hawker"
              :village "Aulakunnu"
@@ -33,8 +34,8 @@
              :camera "Canon 600D"
              :photo "https://ruralindiaonline.org/media/images/Mithun_S_1_copy.2e16d0ba.fill-1110x1410.jpg"}])
 
-(def image-bounds [[[21 82] [22 83]]
-                   [[12 76] [13 77]]])
+(def image-bounds [[[21 82] [21.1 82.1]]
+                   [[12 76] [12.1 76.1]]])
 
 
 (defui PariMap
@@ -42,7 +43,7 @@
   (render [this]
           (let [{:keys [faces]} (om/props this)]
             (Map #js {:center india-coords :zoom 5}
-                 (TileLayer #js {:url tile-url :attribution osm-attribution})
+                 (TileLayer #js {:url tile-url :attribution osm-attribution :bounds india-bounds :ext "png"})
                  (for [[face bounds] (map vector faces image-bounds)]
                    (ImageOverlay (clj->js {:bounds bounds
                                            :opacity 0.9
