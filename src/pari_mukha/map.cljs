@@ -40,8 +40,7 @@
 
 (defn compute-bounds
   "Compute placement of images so that they don't overlap"
-  ;; http://vis.berkeley.edu/courses/cs294-10-fa13/wiki/images/5/55/FP_EvanWang_paper.pdf
-  ;; https://github.com/tinker10/D3-Labeler/blob/master/labeler.js
+  ;; FIXME: Do real stuff
   ([faces] (compute-bounds faces 0.1))
   ([faces image-size] (for [face faces]
                         (let [[x y] (:location face)

@@ -1,0 +1,23 @@
+* Compute placement of images
+** Simulated annealing?
+   http://vis.berkeley.edu/courses/cs294-10-fa13/wiki/images/5/55/FP_EvanWang_paper.pdf
+   https://github.com/tinker10/D3-Labeler/blob/master/labeler.js
+
+   Simulated annealing mechanism described in the paper above could be modified
+   to work for our case, too.
+
+** Modified force-directed graphs??
+   You could use a modified version of what force directed graphs do.  Each
+   photo is attracted towards it's anchor point/location (according to Hooke's
+   law?) and each photo is repelled from each other given by the area of
+   overlap between them.  If they don't overlap at all, they don't repel.  (You
+   could have some kind of boundary, etc. to optimize for distance between the
+   photos)
+
+   https://cs.brown.edu/~rt/gdhandbook/chapters/force-directed.pdf
+
+** Reduce computational complexity?
+   But, we'll need to look at Barnes-Hut or some such algorithme to reduce the
+   complexity of the computation.
+
+   http://arborjs.org/docs/barnes-hut
