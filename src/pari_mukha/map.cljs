@@ -22,7 +22,9 @@
              :date "May 18, 2014"
              :photographer "Jipson Kodiamkunnel"
              :camera "Canon 600D"
-             :photo "https://ruralindiaonline.org/media/images/Ravindran_Nair_4_copy.2e16d0ba.fill-1110x1410.jpg"}
+             :photo "https://ruralindiaonline.org/media/images/Ravindran_Nair_4_copy.2e16d0ba.fill-1110x1410.jpg"
+             :location [9.4981 76.3388]}
+
             {
              :occupation "Vegetable Vendor"
              :village "Padinjare"
@@ -32,11 +34,19 @@
              :date "May 18, 2014"
              :photographer "Jipson Kodiamkunnel"
              :camera "Canon 600D"
-             :photo "https://ruralindiaonline.org/media/images/Mithun_S_1_copy.2e16d0ba.fill-1110x1410.jpg"}])
+             :photo "https://ruralindiaonline.org/media/images/Mithun_S_1_copy.2e16d0ba.fill-1110x1410.jpg"
+             :location [9.4981 76.3388]}])
 
-(def image-bounds [[[21 82] [21.1 82.1]]
-                   [[12 76] [12.1 76.1]]])
 
+(defn compute-bounds
+  "Compute placement of images so that they don't overlap"
+  ;; http://vis.berkeley.edu/courses/cs294-10-fa13/wiki/images/5/55/FP_EvanWang_paper.pdf
+  ;; https://github.com/tinker10/D3-Labeler/blob/master/labeler.js
+  ([faces] (compute-bounds faces 0.1))
+  ([faces image-size] (for [face faces]
+                        (let [[x y] (:location face)
+                              bounds [[x y] [(+ x image-size) (+ y image-size)]]]
+                          (assoc face :bounds bounds)))))
 
 (defui PariMap
   Object
@@ -44,9 +54,9 @@
           (let [{:keys [faces]} (om/props this)]
             (Map #js {:center india-coords :zoom 5}
                  (TileLayer #js {:url tile-url :attribution osm-attribution :bounds india-bounds :ext "png"})
-                 (for [[face bounds] (map vector faces image-bounds)]
-                   (ImageOverlay (clj->js {:bounds bounds
-                                           :opacity 0.9
-                                           :url (:photo face)
-                                           :attribution pari-attribution
-                                           :key (:photo face)})))))))
+                 (for [face (compute-bounds faces)]
+                   (ImageOverlay (clj->js {:bounds (:bounds face)
+                                             :opacity 0.9
+                                             :url (:photo face)
+                                             :attribution pari-attribution
+                                             :key (:photo face)})))))))
