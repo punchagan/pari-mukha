@@ -1,6 +1,7 @@
 (ns pari-mukha.map
   (:require [om.next :as om :refer-macros [defui]]
             [om.dom :as dom :include-macros true]
+            [pari-mukha.utils :as utils]
             [cljsjs.react-leaflet]))
 
 (def Map (js/React.createFactory js/ReactLeaflet.Map))
@@ -40,12 +41,17 @@
 
 (defn compute-bounds
   "Compute placement of images so that they don't overlap"
-  ;; FIXME: Do real stuff
   ([faces] (compute-bounds faces 0.1))
-  ([faces image-size] (for [face faces]
-                        (let [[x y] (:location face)
-                              bounds [[x y] [(+ x image-size) (+ y image-size)]]]
-                          (assoc face :bounds bounds)))))
+  ([faces image-size]
+   (let [objects (for [face faces]
+                   (assoc face
+                          :size image-size
+                          :center (:location face)))]
+     (for [face (utils/simulate objects)
+           :let [[x y] (:center face)
+                 bounds [[(- x (/ image-size 2)) (- y (/ image-size 2))]
+                         [(+ x (/ image-size 2)) (+ y (/ image-size 2))]]]]
+       (assoc face :bounds bounds)))))
 
 (defui PariMap
   Object
