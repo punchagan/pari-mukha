@@ -16,10 +16,15 @@
                  [org.omcljs/om "1.0.0-alpha46"]
                  [cljsjs/react-leaflet "0.12.3-2"]
                  [com.cognitect/transit-cljs "0.8.239"]
-                 [cljs-http "0.1.42"]]
+                 [cljs-http "0.1.42"]
+                 ;; For the scraper
+                 [enlive "1.1.6"]]
 
   :plugins [[lein-figwheel "0.5.8"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
+
+
+  :main pari-mukha.scraper/main
 
   :source-paths ["src"]
 
