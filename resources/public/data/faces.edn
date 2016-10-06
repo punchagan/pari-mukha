@@ -1,0 +1,22 @@
+[{:occupation "Hawker"
+  :village "Aulakunnu"
+  :block "Ambalapuzha"
+  :district "Alappuzha"
+  :state "Kerala"
+  :date "May 18, 2014"
+  :photographer "Jipson Kodiamkunnel"
+  :camera "Canon 600D"
+  :photo "https://ruralindiaonline.org/media/images/Ravindran_Nair_4_copy.2e16d0ba.fill-1110x1410.jpg"
+  :location [9.4981 76.3388]}
+
+ {
+  :occupation "Vegetable Vendor"
+  :village "Padinjare"
+  :block "Alappuzha"
+  :district "Alappuzha"
+  :state "Kerala"
+  :date "May 18, 2014"
+  :photographer "Jipson Kodiamkunnel"
+  :camera "Canon 600D"
+  :photo "https://ruralindiaonline.org/media/images/Mithun_S_1_copy.2e16d0ba.fill-1110x1410.jpg"
+  :location [9.4981 76.3388]}]
