@@ -25,7 +25,7 @@
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]
 
 
-  :main pari-mukha.scraper/main
+  :main ^:skip-aot pari-mukha.scraper
 
   :source-paths ["src"]
 

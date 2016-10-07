@@ -37,7 +37,7 @@
   (let [path (file *cwd* "resources" "public" "data" "faces-new.edn")]
     (spit path (with-out-str (pr data)))))
 
-(defn main []
+(defn -main []
   (println (str "Starting scraping from " start-url " ..."))
   (-> start-url
       pm-face-pages
