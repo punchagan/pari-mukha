@@ -1,7 +1,10 @@
 (ns pari-mukha.scraper
+  (:import (java.net URLEncoder URLDecoder))
   (:require [net.cgrand.enlive-html :as html]
             [me.raynes.fs :as fs :refer [*cwd* file exists?]]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.data.json :as json]
+            [clojure.edn :as edn]))
 
 (defn fetch-url
   "Grab the contents of the url specified"
@@ -53,6 +56,24 @@
 (defn write-edn-data [path data]
   "Writes EDN data to the faces.edn file"
   (spit path (with-out-str (pr data))))
+
+
+(defn get-address [face]
+  (let [{:keys [village district state]} face]
+    (->> [village district state]
+         (filter (fn [x] (not (str/blank? x))))
+         (str/join ", "))))
+
+(def maps-api-url "https://maps.googleapis.com/maps/api/geocode/json?&address=")
+
+(defn url-encode [url]
+  (some-> url str (URLEncoder/encode "UTF-8") (.replace "+" "%20")))
+
+(defn geolocate [face]
+  (let [address (get-address face)
+        url (str maps-api-url (url-encode address))]
+    (print (slurp url))))
+
 
 (defn -main []
   ;; Scrape data if not already scraped
