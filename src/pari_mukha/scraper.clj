@@ -39,8 +39,8 @@
         district (-> (:data-district attrs) str/capitalize str/trim)
         description (:data-description attrs)
         photo (:src (:attrs (first (html/select node [:img]))))]
-    (merge (zipmap [:name :district :photo] [name district photo])
-           (parse-description description))))
+    (merge (parse-description description)
+           (zipmap [:name :district :photo] [name district photo]))))
 
 (defn pm-page-faces
   "Get all the faces on a page"
