@@ -11,7 +11,7 @@
 (def base-url "https://ruralindiaonline.org")
 (def start-url (str base-url "/categories/faces/"))
 
-(defn pm-face-pages
+(defn pm-face-page-urls
   "Get urls of all pages with faces"
   [url]
   (map #(str base-url (:href (:attrs %)))
@@ -35,9 +35,10 @@
     (merge (zipmap [:name :district :photo] [name district photo])
            (parse-description description))))
 
-(defn page-faces
+(defn pm-page-faces
   "Get all the faces on a page"
   [url]
+  (println "Scraping page" url)
   (map extract (html/select (fetch-url url) [:div.categories])))
 
 (defn write-edn-data [data]
@@ -48,8 +49,8 @@
 
 (defn -main []
   (println (str "Starting scraping from " start-url " ..."))
-  (-> start-url
-      pm-face-pages
-      first
-      page-faces
-      write-edn-data))
+  (->> start-url
+       pm-face-page-urls
+       (map pm-page-faces)
+       flatten
+       write-edn-data))
