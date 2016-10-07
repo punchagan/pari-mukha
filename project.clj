@@ -18,7 +18,8 @@
                  [com.cognitect/transit-cljs "0.8.239"]
                  [cljs-http "0.1.42"]
                  ;; For the scraper
-                 [enlive "1.1.6"]]
+                 [enlive "1.1.6"]
+                 [me.raynes/fs "1.4.6"]]
 
   :plugins [[lein-figwheel "0.5.8"]
             [lein-cljsbuild "1.1.4" :exclusions [[org.clojure/clojure]]]]

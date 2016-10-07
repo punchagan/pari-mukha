@@ -1,10 +1,11 @@
 (ns pari-mukha.scraper
-  (:require [net.cgrand.enlive-html :as html]))
+  (:require [net.cgrand.enlive-html :as html]
+            [me.raynes.fs :as fs :refer [*cwd* file]]))
 
 (defn fetch-url
   "Grab the contents of the url specified"
   [url]
-  (html/html-resource  (java.net.URL. url)))
+  (html/html-resource (java.net.URL. url)))
 
 (def base-url "https://ruralindiaonline.org")
 (def start-url (str base-url "/categories/faces/"))
@@ -30,7 +31,16 @@
   [url]
   (map extract (html/select (fetch-url url) [:div.categories])))
 
+(defn write-edn-data [data]
+  "Writes EDN data to the faces.edn file"
+  ;; FIXME: Assumes lein run is called from pari-mukha directory
+  (let [path (file *cwd* "resources" "public" "data" "faces-new.edn")]
+    (spit path (with-out-str (pr data)))))
+
 (defn main []
-  (print (str "Starting scraping from " start-url " ..."))
-  (print (flatten (let [page-urls (pm-face-pages start-url)]
-                    (map page-faces (take 2 page-urls))))))
+  (println (str "Starting scraping from " start-url " ..."))
+  (-> start-url
+      pm-face-pages
+      first
+      page-faces
+      write-edn-data))
