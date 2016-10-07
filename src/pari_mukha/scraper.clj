@@ -1,6 +1,6 @@
 (ns pari-mukha.scraper
   (:require [net.cgrand.enlive-html :as html]
-            [me.raynes.fs :as fs :refer [*cwd* file]]
+            [me.raynes.fs :as fs :refer [*cwd* file exists?]]
             [clojure.string :as str]))
 
 (defn fetch-url
@@ -41,16 +41,21 @@
   (println "Scraping page" url)
   (map extract (html/select (fetch-url url) [:div.categories])))
 
-(defn write-edn-data [data]
+
+;; FIXME: Assumes lein run is called from pari-mukha directory
+(def scraped-data-path (file *cwd* "resources" "public" "data" "faces-new.edn"))
+
+(defn write-edn-data [path data]
   "Writes EDN data to the faces.edn file"
-  ;; FIXME: Assumes lein run is called from pari-mukha directory
-  (let [path (file *cwd* "resources" "public" "data" "faces-new.edn")]
-    (spit path (with-out-str (pr data)))))
+  (spit path (with-out-str (pr data))))
 
 (defn -main []
-  (println (str "Starting scraping from " start-url " ..."))
-  (->> start-url
-       pm-face-page-urls
-       (map pm-page-faces)
-       flatten
-       write-edn-data))
+  ;; Scrape data if not already scraped
+  (when-not (exists? scraped-data-path)
+    (println (str "Starting scraping from " start-url " ..."))
+    (->> start-url
+         pm-face-page-urls
+         (map pm-page-faces)
+         flatten
+         (write-edn-data scraped-data-path)))
+  (println (str "Scraped data is at" scraped-data-path)))
