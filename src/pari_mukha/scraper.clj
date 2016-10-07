@@ -42,7 +42,8 @@
 (defn pm-page-faces
   "Get all the faces on a page"
   [url]
-  (println "Scraping page" url)
+  ;; FIXME: Causes the EDN file to go bonkers!!!
+  ;; (println "Scraping page" url)
   (map extract (html/select (fetch-url url) [:div.categories])))
 
 
