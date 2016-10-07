@@ -18,9 +18,13 @@
        (html/select (fetch-url url) [:div.face_paginator :a])))
 
 (defn parse-description [description]
-  (let [texts (html/texts (html/select (html/html-snippet description) [:p]))]
+  (let [description (str/replace description "<br />" "</p><p>")
+        texts (html/texts (html/select (html/html-snippet description) [:p]))]
     (->> texts
-         (map (fn [s] (str/split s #":[ \s]+" 2)))
+         (map (fn [x] (str/replace x #" +" " ")))
+         (map str/trim)
+         (filter (fn [x] (not (str/blank? x))))
+         (map (fn [s] (str/split s #"[ \s]*[-:][ \s]*" 2)))
          (map (fn [[x y]]
                 [(symbol (str ":" (str/lower-case x))) y]))
          flatten
@@ -28,8 +32,8 @@
 
 (defn extract [node]
   (let [attrs (:attrs (first (html/select node [:a])))
-        name (:data-title attrs)
-        district (:data-district attrs)
+        name (-> (:data-title attrs) str/capitalize str/trim)
+        district (-> (:data-district attrs) str/capitalize str/trim)
         description (:data-description attrs)
         photo (:src (:attrs (first (html/select node [:img]))))]
     (merge (zipmap [:name :district :photo] [name district photo])
@@ -58,4 +62,4 @@
          (map pm-page-faces)
          flatten
          (write-edn-data scraped-data-path)))
-  (println (str "Scraped data is at" scraped-data-path)))
+  (println (str "Scraped data is at " scraped-data-path)))
