@@ -1,6 +1,7 @@
 (ns pari-mukha.scraper
   (:require [net.cgrand.enlive-html :as html]
-            [me.raynes.fs :as fs :refer [*cwd* file]]))
+            [me.raynes.fs :as fs :refer [*cwd* file]]
+            [clojure.string :as str]))
 
 (defn fetch-url
   "Grab the contents of the url specified"
@@ -16,15 +17,23 @@
   (map #(str base-url (:href (:attrs %)))
        (html/select (fetch-url url) [:div.face_paginator :a])))
 
+(defn parse-description [description]
+  (let [texts (html/texts (html/select (html/html-snippet description) [:p]))]
+    (->> texts
+         (map (fn [s] (str/split s #":[ \s]+" 2)))
+         (map (fn [[x y]]
+                [(symbol (str ":" (str/lower-case x))) y]))
+         flatten
+         (apply hash-map))))
+
 (defn extract [node]
   (let [attrs (:attrs (first (html/select node [:a])))
         name (:data-title attrs)
         district (:data-district attrs)
         description (:data-description attrs)
         photo (:src (:attrs (first (html/select node [:img]))))]
-
-    (zipmap [:name :district :description :photo]
-            [name district description photo])))
+    (merge (zipmap [:name :district :photo] [name district photo])
+           (parse-description description))))
 
 (defn page-faces
   "Get all the faces on a page"
