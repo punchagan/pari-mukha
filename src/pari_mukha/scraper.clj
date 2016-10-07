@@ -29,9 +29,9 @@
          (filter (fn [x] (not (str/blank? x))))
          (map (fn [s] (str/split s #"[ \s]*[-:][ \s]*" 2)))
          (map (fn [[x y]]
-                [(symbol (str ":" (str/lower-case x))) y]))
+                [(keyword (str/lower-case x)) y]))
          flatten
-         (apply hash-map))))
+         (apply array-map))))
 
 (defn extract [node]
   (let [attrs (:attrs (first (html/select node [:a])))
