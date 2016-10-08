@@ -20,8 +20,15 @@
   (map #(str base-url (:href (:attrs %)))
        (html/select (fetch-url url) [:div.face_paginator :a])))
 
+(defn make-keyword [s]
+  (->> s
+       str/lower-case
+       (#(str/replace % #"[^a-z]+" "-"))
+       (#(str/replace % #"^-|-$" ""))
+       keyword))
+
 (defn parse-description [description]
-  (let [description (str/replace description "<br />" "</p><p>")
+  (let [description (str/replace description #"<br\s*/>" "</p><p>")
         texts (html/texts (html/select (html/html-snippet description) [:p]))]
     (->> texts
          (map (fn [x] (str/replace x #" +" " ")))
@@ -29,7 +36,8 @@
          (filter (fn [x] (not (str/blank? x))))
          (map (fn [s] (str/split s #"[ \s]*[-:][ \s]*" 2)))
          (map (fn [[x y]]
-                [(keyword (str/lower-case x)) y]))
+                [(make-keyword x) y]))
+         (filter (fn [[x y]] (not (or (nil? x) (str/blank? y)))))
          flatten
          (apply array-map))))
 
