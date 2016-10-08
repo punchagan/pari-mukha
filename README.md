@@ -1,33 +1,41 @@
 # pari-mukha
 
+[PARI's](https://ruralindiaonline.org/categories/faces/) facial map of India,
+on a map.
+
 ## Overview
 
-## Setup
+The project aims to give a different view to the beautiful faces of India from
+the People's Archive of Rural India's faces project.  The project aims to
+collect 3 photographs of people from each
+district.
+[You should help](https://ruralindiaonline.org/pages/send-us-photos-help-pari-capture-the-sheer-facial-diversity-of-the-indian-people/)!
+
+PARI describes their Faces page using the phrase "facial map of India".  This
+inspired me to try and put these faces on a map.
+
+## Development
 
 To get an interactive development environment run:
 
     lein figwheel
 
 and open your browser at [localhost:3449](http://localhost:3449/).
-This will auto compile and send all changes to the browser without the
-need to reload. After the compilation process is complete, you will
-get a Browser Connected REPL. An easy way to try it is:
 
-    (js/alert "Am I connected?")
-
-and you should see an alert in the browser window.
-
-To clean all compiled files:
-
-    lein clean
-
-To create a production build run:
-
-    lein do clean, cljsbuild once min
-
-And open your browser in `resources/public/index.html`. You will not
-get live reloading, nor a REPL.
+To deploy, run the `deploy.sh` script in the repo
 
 ## License
 
+### Code
+
 Copyright © 2016 Puneeth Chaganti
+
+This project is released under the terms of the GNU Affero General Public
+License, version 3.  The license is available from <http://fsf.org/> and as
+LICENSE.txt at the root of this distribution.
+
+### Data and Photographs
+
+Copyright © P. Sainath, People's Archive of Rural India, The CounterMedia
+Trust, 27/43 Sagar Sangam, Bandra Reclamation, Mumbai 400050, Maharashtra,
+India
