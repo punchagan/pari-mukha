@@ -6,7 +6,7 @@ ABOUT=resources/public/about.html
 # Create abou page
 git checkout -- "${ABOUT}"
 markdown -o html5 README.md >> "${ABOUT}"
-echo "</body>\n</html>" >> "${ABOUT}"
+echo "</body></html>" >> "${ABOUT}"
 
 # Build cljs
 lein clean
