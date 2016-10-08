@@ -80,6 +80,7 @@
 
 (def maps-api-url "https://maps.googleapis.com/maps/api/geocode/json?&address=")
 (def geo-data-path (file *cwd* "resources" "public" "data" "faces-geo-data.edn"))
+(def faces-data-path (file *cwd* "resources" "public" "data" "faces.edn"))
 
 (defn -clean-up-data [info]
   ;; Hackish data clean up function
@@ -87,6 +88,7 @@
     (when (not (nil? state))
       (->> (cond
              (str/includes? state "Andhra Pradesh*") "Andhra Pradesh"
+             (str/includes? state "Nationaal Capital Region") "Delhi"
              (str/includes? state "Kalahandi") "Odisha"
              (str/includes? state "Telangana") "Telangana"
              (str/includes? state "201") "West Bengal"
@@ -152,6 +154,45 @@
     (write-edn-data geo-data-path faces-geo-data)
     (println "Remaining geo-locations to fetch:" remaining)))
 
+(defn hyphenate [s] (-> s str/lower-case (str/replace #"[-\s]+" "-")))
+
+(defn parse-location [location]
+  (->> location
+       (filter #(empty? (clojure.set/intersection (set (:types %)) #{"country" "postal_code"})))
+       (map :long_name)
+       (map hyphenate)))
+
+(defn score-location
+  "Assign a score to a location result for the given face."
+  [location face]
+  (let [address (last (get-addresses face))
+        ;; Drop the country and hyphenate
+        parsed-address (-> address (str/split  #",\s*") drop-last (->> (map hyphenate)))
+        parsed-location (parse-location location)]
+    ;; FIXME: Return a proper score!
+    (rand)))
+
+(defn get-coordinates
+  "Get the coordinates with the highest score for a face"
+  [face]
+  (->> face
+       :locations
+       (map :results)
+       flatten
+       (sort-by #(score-location % face) >)
+       first
+       :geometry
+       :location))
+
+(defn create-faces-file []
+  (let [faces (edn/read-string (slurp geo-data-path))
+        processed-faces (for [face faces
+                              :let [location (get-coordinates face)]]
+                          (assoc (dissoc face :locations)
+                                 :location location
+                                 :photo (str base-url (:photo face))))]
+    (write-edn-data faces-data-path processed-faces)))
+
 ;; Main
 
 (defn -main []
@@ -164,4 +205,8 @@
   ;; Get geo data if not already done
   (println "Getting missing geo data")
   (geolocate-all)
-  (println (str "Geo data is at " geo-data-path)))
+  (println (str "Geo data is at " geo-data-path))
+
+  ;; Write faces.edn
+  (create-faces-file)
+  (println (str "Faces data is at " faces-data-path)))
