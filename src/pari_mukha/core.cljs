@@ -17,5 +17,5 @@
 (om/add-root! reconciler
               PariMap (gdom/getElement "app"))
 
-(go (let [response (<! (http/get "/data/faces.edn"))]
+(go (let [response (<! (http/get "data/faces.edn"))]
       (swap! app-state assoc :faces (:body response))))
