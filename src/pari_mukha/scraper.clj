@@ -41,14 +41,27 @@
          flatten
          (apply array-map))))
 
+(defn -clean-up-data [info]
+  ;; Hackish data clean up function
+  (let [{:keys [state]} info]
+    (when (not (nil? state))
+      (->> (cond
+             (str/includes? state "Andhra Pradesh*") "Andhra Pradesh"
+             (str/includes? state "Kalahandi") "Odisha"
+             (str/includes? state "Telangana") "Telangana"
+             (str/includes? state "201") "West Bengal")
+           (assoc info :state)))))
+
 (defn extract [node]
   (let [attrs (:attrs (first (html/select node [:a])))
         name (-> (:data-title attrs) str/capitalize str/trim)
         district (-> (:data-district attrs) str/capitalize str/trim)
         description (:data-description attrs)
         photo (:src (:attrs (first (html/select node [:img]))))]
-    (merge (parse-description description)
-           (zipmap [:name :district :photo] [name district photo]))))
+
+    (-> (parse-description description)
+        (merge (zipmap [:name :district :photo] [name district photo]))
+        (-clean-up-data))))
 
 (defn pm-page-faces
   "Get all the faces on a page"
