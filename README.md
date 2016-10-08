@@ -14,6 +14,10 @@ district.
 PARI describes their Faces page using the phrase "facial map of India".  This
 inspired me to try and put these faces on a map.
 
+This project is also an attempt by me to learn Clojure and Clojurescript.  It
+is very much a work in progress, and any code improvements are more than
+appreciated.
+
 ## Development
 
 To get an interactive development environment run:
