@@ -6,15 +6,15 @@
 
 (def india-coords #js [22 81])
 (def india-bounds (js/L.latLngBounds (js/L.latLng 37 67) (js/L.latLng 0 98)))
-(def osm-attribution "Map tiles by <a href=http://stamen.com>Stamen Design</a>, <a href=http://creativecommons.org/licenses/by/3.0>CC BY 3.0</a> &mdash; Map data &copy; <a href=http://www.openstreetmap.org/copyright>OpenStreetMap</a>")
+(def map-attribution "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ")
 (def pari-attribution "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>")
-(def tile-url "http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}")
+(def tile-url "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}")
 
 (defn compute-bounds
   "Compute placement of images so that they don't overlap"
   ([faces] (compute-bounds faces 0.1))
   ([faces image-size]
-   (let [objects (for [face (take 100 faces)
+   (let [objects (for [face faces
                        :let [location (-> face :location)
                              parsed-location (map location [:lat :lng])]]
                    (assoc face
@@ -36,8 +36,8 @@
   Object
   (render [this]
           (let [{:keys [faces]} (om/props this)]
-            (Map #js {:center india-coords :zoom 5}
-                 (TileLayer #js {:url tile-url :attribution osm-attribution :bounds india-bounds :ext "png"})
+            (Map #js {:center india-coords :zoom 5 :maxZoom 16}
+                 (TileLayer #js {:url tile-url :attribution map-attribution :ext "png"})
                  (for [face (compute-bounds faces)]
                    (ImageOverlay (clj->js {:bounds (:bounds face)
                                            :opacity 0.9

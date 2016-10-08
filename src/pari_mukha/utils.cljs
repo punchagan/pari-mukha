@@ -93,7 +93,4 @@
 
 (defn simulate [objects]
   "Simulate..."
-  (def new-objects objects)
-  (dotimes [i 10]
-    (def new-objects (move-all new-objects)))
-  new-objects)
+  objects)
