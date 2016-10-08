@@ -14,10 +14,13 @@
   "Compute placement of images so that they don't overlap"
   ([faces] (compute-bounds faces 0.1))
   ([faces image-size]
-   (let [objects (for [face faces]
+   (let [objects (for [face (take 100 faces)
+                       :let [location (-> face :location)
+                             parsed-location (map location [:lat :lng])]]
                    (assoc face
+                          :location parsed-location
                           :size image-size
-                          :center (:location face)))]
+                          :center parsed-location))]
      (for [face (utils/simulate objects)
            :let [[x y] (:center face)
                  bounds [[(- x (/ image-size 2)) (- y (/ image-size 2))]

@@ -29,7 +29,6 @@
 
     (* dx dy)))
 
-
 (defn overlap-fraction [object-1 object-2]
   "Compute fraction of object-1's area that object-2 overlaps with."
   (let [h1 (or (:height object-1) (:size object-1))
@@ -75,7 +74,6 @@
                   F (* c_3 (overlap-fraction object other-object))]
               [(* F x_component) (* F y_component)]))))
 
-
 (defn net-force [object objects]
   (reduce add-components
           [(attraction object) (repulsion object objects)]))
@@ -96,6 +94,6 @@
 (defn simulate [objects]
   "Simulate..."
   (def new-objects objects)
-  (dotimes [i 100]
+  (dotimes [i 10]
     (def new-objects (move-all new-objects)))
   new-objects)
