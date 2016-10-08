@@ -8,7 +8,7 @@
 (def india-bounds (js/L.latLngBounds (js/L.latLng 37 67) (js/L.latLng 0 98)))
 (def map-attribution "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ")
 (def pari-attribution "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>")
-(def tile-url "http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}")
+(def tile-url "//server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}")
 
 (defn compute-bounds
   "Compute placement of images so that they don't overlap"
