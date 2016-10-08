@@ -30,11 +30,11 @@
        (html/select (fetch-url url) [:div.face_paginator :a])))
 
 (defn make-keyword [s]
-  (->> s
-       str/lower-case
-       (#(str/replace % #"[^a-z]+" "-"))
-       (#(str/replace % #"^-|-$" ""))
-       keyword))
+  (-> s
+      str/lower-case
+      (str/replace #"[^a-z]+" "-")
+      (str/replace #"^-|-$" "")
+      keyword))
 
 (defn parse-description [description]
   (let [description (str/replace description #"<br\s*/>" "</p><p>")
