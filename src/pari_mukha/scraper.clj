@@ -56,8 +56,8 @@
 
 (defn extract [node]
   (let [attrs (:attrs (first (html/select node [:a])))
-        name (-> (:data-title attrs) str/capitalize str/trim)
-        district (-> (:data-district attrs) str/capitalize str/trim)
+        name (-> (:data-title attrs) str/trim)
+        district (-> (:data-district attrs) str/trim)
         description (:data-description attrs)
         photo (:src (:attrs (first (html/select node [:img]))))]
 
