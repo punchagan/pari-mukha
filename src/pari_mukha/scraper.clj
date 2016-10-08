@@ -13,6 +13,8 @@
 
 (def base-url "https://ruralindiaonline.org")
 (def start-url (str base-url "/categories/faces/"))
+;; FIXME: Assumes lein run is called from pari-mukha directory
+(def scraped-data-path (file *cwd* "resources" "public" "data" "faces-new.edn"))
 
 (defn pm-face-page-urls
   "Get urls of all pages with faces"
@@ -70,22 +72,15 @@
   ;; (println "Scraping page" url)
   (map extract (html/select (fetch-url url) [:div.categories])))
 
+;;; Maps/Geocoding stuff
 
-;; FIXME: Assumes lein run is called from pari-mukha directory
-(def scraped-data-path (file *cwd* "resources" "public" "data" "faces-new.edn"))
-
-(defn write-edn-data [path data]
-  "Writes EDN data to the faces.edn file"
-  (spit path (with-out-str (pr data))))
-
+(def maps-api-url "https://maps.googleapis.com/maps/api/geocode/json?&address=")
 
 (defn get-address [face]
   (let [{:keys [village district state]} face]
     (->> [village district state]
          (filter (fn [x] (not (str/blank? x))))
          (str/join ", "))))
-
-(def maps-api-url "https://maps.googleapis.com/maps/api/geocode/json?&address=")
 
 (defn url-encode [url]
   (some-> url str (URLEncoder/encode "UTF-8") (.replace "+" "%20")))
@@ -95,6 +90,11 @@
         url (str maps-api-url (url-encode address))]
     (print (slurp url))))
 
+;; Main
+
+(defn write-edn-data [path data]
+  "Writes EDN data to the faces.edn file"
+  (spit path (with-out-str (pr data))))
 
 (defn -main []
   ;; Scrape data if not already scraped
