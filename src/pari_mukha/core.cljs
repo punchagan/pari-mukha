@@ -5,7 +5,8 @@
             [pari-mukha.map :as pari-map :refer [PariMap]]
             [cljsjs.react-leaflet]
             [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]))
+            [cljs.core.async :refer [<!]]
+            [cljs.reader :refer [read-string]]))
 
 (enable-console-print!)
 
@@ -17,5 +18,7 @@
 (om/add-root! reconciler
               PariMap (gdom/getElement "app"))
 
-(go (let [response (<! (http/get "data/faces.edn"))]
-      (swap! app-state assoc :faces (:body response))))
+(go (let [response (<! (http/get "data/faces.data"))
+          body (:body response)]
+
+      (swap! app-state assoc :faces (read-string body))))
