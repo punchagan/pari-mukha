@@ -18,6 +18,13 @@ This project is also an attempt by me to learn Clojure and Clojurescript.  It
 is very much a work in progress, and any code improvements are more than
 appreciated.
 
+Built with ♥
+using
+<img src="//raw.githubusercontent.com/cljs/logo/master/cljs.png" alt="Clojurescript".title="Clojurescript" height="30" />
+<img src="//leafletjs.com/docs/images/logo.png" alt="Leaflet".title="Leaflet" height="30" />
+<img src="//facebook.github.io/react/img/logo.svg" alt="Leaflet".title="Leaflet" height="30" />
+<img height="30" src="//clojure.org/images/clojure-logo-120b.png" class="clj-logo">
+
 ## Development
 
 To get an interactive development environment run:
