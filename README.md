@@ -20,10 +20,10 @@ appreciated.
 
 Built with ♥
 using
-<img src="//raw.githubusercontent.com/cljs/logo/master/cljs.png" alt="Clojurescript".title="Clojurescript" height="30" />
+<img src="https://raw.githubusercontent.com/cljs/logo/master/cljs.png" alt="Clojurescript".title="Clojurescript" height="30" />
 <img src="http://leafletjs.com/docs/images/logo.png" alt="Leaflet".title="Leaflet" height="30" />
-<img src="//facebook.github.io/react/img/logo.svg" alt="Leaflet".title="Leaflet" height="30" />
-<img height="30" src="//clojure.org/images/clojure-logo-120b.png" class="clj-logo">
+<img src="https://facebook.github.io/react/img/logo.svg" alt="Leaflet".title="Leaflet" height="30" />
+<img height="30" src="https://clojure.org/images/clojure-logo-120b.png" class="clj-logo">
 
 ## Development
 
