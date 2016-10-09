@@ -11,7 +11,7 @@
 (def base-url "https://ruralindiaonline.org")
 (def start-url (str base-url "/categories/faces/"))
 ;; FIXME: Assumes lein run is called from pari-mukha directory
-(def scraped-data-path (file *cwd* "resources" "public" "data" "faces-scraped.edn"))
+(def scraped-data-path (file *cwd* "resources" "public" "data" "faces-scraped.data"))
 
 (defn fetch-url
   "Grab the contents of the url specified"
@@ -19,7 +19,7 @@
   (html/html-resource (java.net.URL. url)))
 
 (defn write-edn-data
-  "Writes EDN data to the faces.edn file"
+  "Writes EDN data a data file"
   [path data]
   (spit path (with-out-str (pr data))))
 
@@ -79,8 +79,8 @@
 ;;; Maps/Geocoding stuff
 
 (def maps-api-url "https://maps.googleapis.com/maps/api/geocode/json?&address=")
-(def geo-data-path (file *cwd* "resources" "public" "data" "faces-geo-data.edn"))
-(def faces-data-path (file *cwd* "resources" "public" "data" "faces.edn"))
+(def geo-data-path (file *cwd* "resources" "public" "data" "faces-geo.data"))
+(def faces-data-path (file *cwd* "resources" "public" "data" "faces.data"))
 
 (defn -clean-up-data [info]
   ;; Hackish data clean up function
@@ -207,6 +207,6 @@
   (geolocate-all)
   (println (str "Geo data is at " geo-data-path))
 
-  ;; Write faces.edn
+  ;; Write faces.data
   (create-faces-file)
   (println (str "Faces data is at " faces-data-path)))
