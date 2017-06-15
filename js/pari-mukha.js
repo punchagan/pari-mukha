@@ -15,3 +15,9 @@ L.tileLayer(tile_url, {
         pari_attribution,
     id: 'mapbox.streets'
 }).addTo(map);
+
+var zoom_changed = function(payload){
+    console.log(payload.target.getZoom());
+};
+
+map.on('zoom', zoom_changed);
