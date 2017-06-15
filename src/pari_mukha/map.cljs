@@ -1,8 +1,7 @@
 (ns pari-mukha.map
-  (:require [om.next :as om :refer-macros [defui]]
-            [om.dom :as dom :include-macros true]
-            [pari-mukha.utils :as utils]
-            [cljsjs.react-leaflet]))
+  (:require
+   [pari-mukha.utils :as utils]
+   [cljsjs.leaflet]))
 
 (def india-coords #js [22 81])
 (def india-bounds (js/L.latLngBounds (js/L.latLng 37 67) (js/L.latLng 0 98)))
@@ -27,20 +26,18 @@
                          [(+ x (/ image-size 2)) (+ y (/ image-size 2))]]]]
        (assoc face :bounds bounds)))))
 
-(def Map (js/React.createFactory js/ReactLeaflet.Map))
-(def TileLayer (js/React.createFactory js/ReactLeaflet.TileLayer))
-(def GeoJson (js/React.createFactory js/ReactLeaflet.GeoJson))
-(def ImageOverlay (js/React.createFactory js/ReactLeaflet.ImageOverlay))
 
-(defui PariMap
-  Object
-  (render [this]
-          (let [{:keys [faces]} (om/props this)]
-            (Map #js {:center india-coords :zoom 5 :maxZoom 16}
-                 (TileLayer #js {:url tile-url :attribution map-attribution :ext "png"})
-                 (for [face (compute-bounds faces)]
-                   (ImageOverlay (clj->js {:bounds (:bounds face)
-                                           :opacity 0.9
-                                           :url (:photo face)
-                                           :attribution pari-attribution
-                                           :key (:photo face)})))))))
+(defn setup-map [map-container-id]
+  (let [map (L.map map-container-id #js {:center india-coords :zoom 1})
+        tile-layer (L.tileLayer tile-url)]
+    (tile-layer.addTo map)))
+
+;; L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', ).addTo(mymap);
+
+
+;; {
+;;  attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+;;  maxZoom: 18,
+;;  id: 'your.mapbox.project.id',
+;;  accessToken: 'your.mapbox.public.access.token'
+;;  }

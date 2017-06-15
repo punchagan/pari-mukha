@@ -1,5 +1,5 @@
 /* some style */
-.leaflet-container {
+#map-container {
     height: 800px;
     width: 100%;
 }

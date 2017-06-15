@@ -9,10 +9,7 @@
                  [org.clojure/clojurescript "1.9.229"]
                  [org.clojure/core.async "0.2.391"
                   :exclusions [org.clojure/tools.reader]]
-                 [cljsjs/react "15.3.1-0"]
-                 [cljsjs/react-dom "15.3.1-0"]
-                 [org.omcljs/om "1.0.0-alpha46"]
-                 [cljsjs/react-leaflet "0.12.3-2"]
+                 [cljsjs/leaflet "1.0.3-1"]
                  [cljs-http "0.1.42"]
                  ;; For the scraper
                  [enlive "1.1.6"]

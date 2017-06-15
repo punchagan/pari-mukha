@@ -1,24 +1,31 @@
 (ns pari-mukha.core
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [goog.dom :as gdom]
-            [om.next :as om]
-            [pari-mukha.map :as pari-map :refer [PariMap]]
-            [cljsjs.react-leaflet]
-            [cljs-http.client :as http]
-            [cljs.core.async :refer [<!]]
-            [cljs.reader :refer [read-string]]))
+  (:require
+   [clojure.browser.dom :refer [replace-node html->dom]]
+   [cljs-http.client :as http]
+   [cljs.core.async :refer [<!]]
+   [cljs.reader :refer [read-string]]
+   [pari-mukha.map :as pari-map]))
 
 (enable-console-print!)
 
 (defonce app-state (atom {:faces []}))
 
-(def reconciler
-  (om/reconciler {:state app-state}))
+(defn get-face-data []
+  (go (let [response (<! (http/get "data/faces.data"))
+            body (:body response)]
+        (swap! app-state assoc :faces (read-string body)))))
 
-(om/add-root! reconciler
-              PariMap (gdom/getElement "app"))
+(defn teardown []
+  (print "Tearing down!"))
 
-(go (let [response (<! (http/get "data/faces.data"))
-          body (:body response)]
+(defn setup []
+  (pari-map/setup-map "map-container")
+  (get-face-data))
 
-      (swap! app-state assoc :faces (read-string body))))
+(setup)
+
+;; define a :on-jsload hook in your :cljsbuild options
+(defn on-js-reload []
+  (teardown)
+  (setup))
