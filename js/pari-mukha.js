@@ -8,11 +8,6 @@ var india_coords = [22, 81],
     pari_map = L.map('map-container'),
     photos = [];
 
-// FIXME: Need to also do this for pan changed events
-var zoom_changed = function(payload){
-    show_faces();
-};
-
 var setup_map = function(map_){
     map_.setView(india_coords, zoom_level);
     L.tileLayer(tile_url, {
@@ -22,7 +17,8 @@ var setup_map = function(map_){
             pari_attribution,
         id: 'light.grey.world'
     }).addTo(map_);
-    map_.on('zoom', zoom_changed);
+    map_.on('zoomend', show_faces);
+    map_.on('moveend', show_faces);
 };
 
 var fetch_photo_data = function(display_callback){
@@ -53,7 +49,6 @@ var add_face = function(face, i){
 };
 
 var filter_display_images = function(photos, zoom, bounds){
-    console.log(zoom, bounds);
     var start = Math.floor(Math.random() * photos.length),
         end = start + 15;
     return photos.slice(start, end);
