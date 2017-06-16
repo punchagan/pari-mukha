@@ -9,10 +9,7 @@ var india_coords = [22, 81],
     photos = [];
 
 var zoom_changed = function(payload){
-    console.log(payload.target.getZoom());
-    if (photos.length == 0) {
-        console.log("Photos not fetched, still");
-    }
+    show_faces();
 };
 
 var setup_map = function(map_){
@@ -22,12 +19,12 @@ var setup_map = function(map_){
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
             map_attribution + ', ' +
             pari_attribution,
-        id: 'mapbox.streets'
+        id: 'light.grey.world'
     }).addTo(map_);
     map_.on('zoom', zoom_changed);
 };
 
-var fetch_photo_data = function(map_){
+var fetch_photo_data = function(display_callback){
     console.log("Fetching face data...");
     var url = 'data/faces.json';
     fetch(url, {})
@@ -35,6 +32,7 @@ var fetch_photo_data = function(map_){
             if (response.status == 200) {
                 return response.json();
             } else {
+                // FIXME: Let the user know, there was an error?
                 console.log("Couldn't fetch faces");
                 return [];
             }
@@ -42,7 +40,7 @@ var fetch_photo_data = function(map_){
         .then(function(parsed_data){
             console.log("No. of faces fetched: " + parsed_data.length);
             photos = parsed_data;
-            parsed_data.map(add_face, map_);
+            display_callback();
         });
 };
 
@@ -50,8 +48,31 @@ var add_face = function(face, i){
     var map_ = this;
     var imageUrl = face.photo,
         imageBounds = [[face.location.lat, face.location.lng], [face.location.lat+1, face.location.lng+1]];
-    L.imageOverlay(imageUrl, imageBounds).addTo(map_);
+    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer'}).addTo(map_);
+};
+
+var filter_display_images = function(photos, zoom, bounds){
+    console.log(zoom, bounds);
+    var start = Math.floor(Math.random() * photos.length),
+        end = start + 15;
+    console.log(start, end);
+    return photos.slice(start, end);
+};
+
+var show_faces = function(){
+    // FIXME: Uses globals to do the magic!
+    pari_map.eachLayer(remove_image_layer, pari_map);
+    var zoom = pari_map.getZoom(),
+        bounds = pari_map.getBounds(),
+        display_photos = filter_display_images(photos, zoom, bounds);
+    display_photos.map(add_face, pari_map);
+};
+
+var remove_image_layer = function(map_layer){
+    if (map_layer.options.class === 'face.layer') {
+        this.removeLayer(map_layer);
+    }
 };
 
 setup_map(pari_map);
-fetch_photo_data(pari_map);
+fetch_photo_data(show_faces);
