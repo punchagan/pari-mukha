@@ -8,6 +8,7 @@ var india_coords = [22, 81],
     pari_map = L.map('map-container'),
     photos = [];
 
+// FIXME: Need to also do this for pan changed events
 var zoom_changed = function(payload){
     show_faces();
 };
@@ -55,7 +56,6 @@ var filter_display_images = function(photos, zoom, bounds){
     console.log(zoom, bounds);
     var start = Math.floor(Math.random() * photos.length),
         end = start + 15;
-    console.log(start, end);
     return photos.slice(start, end);
 };
 
@@ -64,7 +64,8 @@ var show_faces = function(){
     pari_map.eachLayer(remove_image_layer, pari_map);
     var zoom = pari_map.getZoom(),
         bounds = pari_map.getBounds(),
-        display_photos = filter_display_images(photos, zoom, bounds);
+        in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
+        display_photos = filter_display_images(in_bounds_photos, zoom, bounds);
     display_photos.map(add_face, pari_map);
 };
 
