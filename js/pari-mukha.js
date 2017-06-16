@@ -1,3 +1,4 @@
+// Configuration
 var india_coords = [22, 81],
     zoom_level = 5,
     max_zoom = 16,
@@ -5,8 +6,12 @@ var india_coords = [22, 81],
     pari_attribution = "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>",
     map_attribution = "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
     india_bounds = [[37, 67] [0, 98]],
-    pari_map = L.map('map-container'),
-    photos = [];
+    map_container = 'map-container';
+
+// App global state
+var pari_map = L.map(map_container),
+    photos = [],
+    displayed_photos = new Set();
 
 var setup_map = function(map_){
     map_.setView(india_coords, zoom_level);
@@ -48,10 +53,29 @@ var add_face = function(face, i){
     L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer'}).addTo(map_);
 };
 
-var filter_display_images = function(photos, zoom, bounds){
-    var start = Math.floor(Math.random() * photos.length),
-        end = start + 15;
-    return photos.slice(start, end);
+var filter_display_images = function(photos, displayed, zoom, bounds){
+    var MAX_DISPLAYED_IMAGES = 15,  // FIXME: Config var here
+        in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
+        already_displayed = in_bounds_photos.filter(function(photo){return displayed.has(photo);}),
+        not_displayed = in_bounds_photos.filter(function(photo){return !displayed.has(photo);});
+
+    already_displayed = new Set(already_displayed);
+
+    if (already_displayed.size + not_displayed.length <= MAX_DISPLAYED_IMAGES){
+        not_displayed.forEach(function(photo){already_displayed.add(photo);});
+    } else {
+        var required_count = MAX_DISPLAYED_IMAGES - already_displayed.size,
+            start = Math.floor(Math.random() * not_displayed.length),
+            end = start + required_count;
+        if (end > not_displayed.length) {
+            end = not_displayed.length;
+            start = end - required_count;
+        }
+        not_displayed.slice(start, end).forEach(function(photo){already_displayed.add(photo);});
+    }
+    // FIXME: Setting global displayed_photos
+    displayed_photos = already_displayed;
+    return Array.from(already_displayed);
 };
 
 var show_faces = function(){
@@ -59,8 +83,7 @@ var show_faces = function(){
     pari_map.eachLayer(remove_image_layer, pari_map);
     var zoom = pari_map.getZoom(),
         bounds = pari_map.getBounds(),
-        in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
-        display_photos = filter_display_images(in_bounds_photos, zoom, bounds);
+        display_photos = filter_display_images(photos, displayed_photos, zoom, bounds);
     display_photos.map(add_face, pari_map);
 };
 
