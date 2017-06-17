@@ -1,12 +1,15 @@
 // Configuration
 var india_coords = [22, 81],
+    india_bounds = [[37, 67], [6, 98]],
+
+    photo_size = 100,
     zoom_level = 5,
-    max_zoom = 16,
+    max_zoom = 13,
     min_zoom = 5,
     tile_url = "//server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
     pari_attribution = "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>",
     map_attribution = "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
-    india_bounds = [[37, 67], [6, 98]],
+
     map_container = 'map-container';
 
 // App global state
@@ -50,11 +53,11 @@ var fetch_photo_data = function(display_callback){
         });
 };
 
-var add_face = function(face, i){
-    var map_ = this;
+var add_face = function(map_, face, size){
     var imageUrl = face.photo,
-        imageBounds = [[face.location.lat, face.location.lng], [face.location.lat+1, face.location.lng+1]];
-    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer'}).addTo(map_);
+        imageBounds = [[face.location.lat, face.location.lng],
+                       [face.location.lat+size, face.location.lng+size]];
+    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', face: face}).addTo(map_);
 };
 
 var filter_display_images = function(photos, displayed, zoom, bounds){
@@ -82,13 +85,28 @@ var filter_display_images = function(photos, displayed, zoom, bounds){
     return Array.from(already_displayed);
 };
 
+var compute_face_size = function(map_){
+    var map_size = map_.getSize(),
+        width = map_size.x,
+        height = map_size.y,
+        bounds = map_.getBounds(),
+        east_west = bounds.getEast() - bounds.getWest(),
+        north_south = bounds.getNorth() - bounds.getSouth(),
+        east_west_size = (east_west * photo_size)/width,
+        north_south_size = (north_south * photo_size/height),
+        size = Math.min(east_west_size, north_south_size);
+    return size;
+};
+
 var show_faces = function(){
     // FIXME: Uses globals to do the magic!
     pari_map.eachLayer(remove_image_layer, pari_map);
     var zoom = pari_map.getZoom(),
         bounds = pari_map.getBounds(),
-        display_photos = filter_display_images(photos, displayed_photos, zoom, bounds);
-    display_photos.map(add_face, pari_map);
+        display_photos = filter_display_images(photos, displayed_photos, zoom, bounds),
+        face_size = compute_face_size(pari_map);
+
+    display_photos.map(function(face){add_face(pari_map, face, face_size);});
 };
 
 var remove_image_layer = function(map_layer){
