@@ -2,6 +2,7 @@
 var india_coords = [22, 81],
     india_bounds = [[37, 67], [6, 98]],
 
+    map_size = 800, // FIXME: Duplicated in style.css
     photo_size = 75,
     max_photos = 25,
 
@@ -142,7 +143,8 @@ var show_faces = function(){
     // FIXME: Uses globals to do the magic!
     pari_map.eachLayer(remove_image_layer, pari_map);
     var zoom = pari_map.getZoom(),
-        bounds = pari_map.getBounds(),
+        // -ve pad the map bounds to filter only fully visible images
+        bounds = pari_map.getBounds().pad(-(photo_size/2)/map_size),
         face_size = compute_face_size(pari_map),
         display_photos = filter_display_images(photos, displayed_photos, bounds, face_size);
 
