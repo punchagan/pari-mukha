@@ -12,3 +12,12 @@ body{
 .page-title {
     text-align: center;
 }
+
+ul.navigation {
+    text-align: center;
+    list-style-type: none;
+}
+
+ul.navigation li {
+    display: inline;
+}
