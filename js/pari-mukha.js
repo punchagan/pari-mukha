@@ -51,10 +51,16 @@ var fetch_photo_data = function(display_callback){
         });
 };
 
+var image_bounds = function(face, size){
+    var imageBounds = [[face.location.lat-size/2, face.location.lng-size/2],
+                       [face.location.lat+size/2, face.location.lng+size/2]];
+
+    return new L.latLngBounds(imageBounds);
+};
+
 var add_face = function(map_, face, size){
     var imageUrl = face.photo,
-        imageBounds = [[face.location.lat, face.location.lng],
-                       [face.location.lat+size, face.location.lng+size]];
+        imageBounds = image_bounds(face, size);
     L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', face: face}).addTo(map_);
 };
 
