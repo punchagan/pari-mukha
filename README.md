@@ -11,7 +11,8 @@ to collect 3 photographs of people from each
 district.
 [You should help](https://ruralindiaonline.org/pages/send-us-photos-help-pari-capture-the-sheer-facial-diversity-of-the-indian-people/)!
 
-You can learn more about PARI from this video
+Watch this video to learn more about PARI
+
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wYp743XsOjo" frameborder="0" allowfullscreen></iframe>
 
 PARI describes their Faces page using the phrase "facial map of India".  This
