@@ -30,8 +30,9 @@ var setup_map = function(map_){
             pari_attribution,
         id: 'light.grey.world'
     }).addTo(map_);
-    map_.on('moveend', show_faces);
-    map_.setMaxBounds(india_bounds);
+    map_.on('moveend', show_faces)
+        .on('zoomstart', close_popup)
+        .setMaxBounds(india_bounds);
 };
 
 var fetch_photo_data = function(display_callback){
@@ -64,7 +65,34 @@ var image_bounds = function(face, size){
 var add_face = function(map_, face, size){
     var imageUrl = face.photo,
         imageBounds = image_bounds(face, size);
-    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', face: face}).addTo(map_);
+    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', interactive: true, face: face})
+        .addTo(map_)
+        .on('click', show_image_info_popup);
+};
+
+var show_image_info_popup = function(){
+    var face = this.options.face,
+        latLng = [face.location.lat, face.location.lng];
+    // FIXME: Global map
+    pari_map.openPopup(get_popup_content(face), latLng);
+};
+
+var get_popup_content = function(face){
+    // FIXME: photo needs to be replaced by page_url
+    var name_template = '<a target="_blank" href="{photo}">{name}</a><br />',
+        occupation_template = face.occupation?'{occupation}<br /><br />':'<br />',
+        location_template = face.village?
+        '{village}, {district}, {state}<br />':
+        '{district}, {state}<br />';
+
+    var template = '<p>' +
+        name_template + occupation_template + location_template +
+        '</p>';
+    return L.Util.template(template, face);
+};
+
+var close_popup = function(){
+    this.closePopup();
 };
 
 var filter_display_images = function(photos, displayed, bounds, photo_size){
