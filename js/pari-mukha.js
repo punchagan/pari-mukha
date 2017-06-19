@@ -2,7 +2,9 @@
 var india_coords = [22, 81],
     india_bounds = [[37, 67], [6, 98]],
 
-    photo_size = 100,
+    photo_size = 75,
+    max_photos = 25,
+
     zoom_level = 5,
     max_zoom = 13,
     min_zoom = 5,
@@ -65,19 +67,18 @@ var add_face = function(map_, face, size){
 };
 
 var filter_display_images = function(photos, displayed, bounds, photo_size){
-    var MAX_DISPLAYED_IMAGES = 15,  // FIXME: Config var here
-        in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
+    var in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
         already_displayed = in_bounds_photos.filter(function(photo){return displayed.has(photo);}),
         not_displayed = in_bounds_photos.filter(function(photo){return !displayed.has(photo);});
 
     already_displayed = new Set(already_displayed);
 
-    if (already_displayed.size + not_displayed.length <= MAX_DISPLAYED_IMAGES){
+    if (already_displayed.size + not_displayed.length <= max_photos){
         // FIXME: Add non-overlapping magic, here. May be we need to add some
         // fuzz on the bounds of an image, etc.
         not_displayed.forEach(function(photo){already_displayed.add(photo);});
     } else {
-        already_displayed = find_non_overlapping_images(already_displayed, not_displayed, MAX_DISPLAYED_IMAGES, photo_size);
+        already_displayed = find_non_overlapping_images(already_displayed, not_displayed, max_photos, photo_size);
     }
     // FIXME: Setting global displayed_photos
     displayed_photos = already_displayed;
