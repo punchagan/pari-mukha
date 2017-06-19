@@ -79,8 +79,7 @@ var show_image_info_popup = function(){
 };
 
 var get_popup_content = function(face){
-    // FIXME: photo needs to be replaced by page_url
-    var name_template = '<a target="_blank" href="{photo}">{name}</a><br />',
+    var name_template = '<a target="_blank" href="{url}">{name}</a><br />',
         occupation_template = face.occupation?'{occupation}<br /><br />':'<br />',
         location_template = face.village?
         '{village}, {district}, {state}<br />':
