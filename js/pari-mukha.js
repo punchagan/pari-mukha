@@ -64,7 +64,7 @@ var add_face = function(map_, face, size){
     L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', face: face}).addTo(map_);
 };
 
-var filter_display_images = function(photos, displayed, zoom, bounds){
+var filter_display_images = function(photos, displayed, bounds, photo_size){
     var MAX_DISPLAYED_IMAGES = 15,  // FIXME: Config var here
         in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
         already_displayed = in_bounds_photos.filter(function(photo){return displayed.has(photo);}),
@@ -73,20 +73,55 @@ var filter_display_images = function(photos, displayed, zoom, bounds){
     already_displayed = new Set(already_displayed);
 
     if (already_displayed.size + not_displayed.length <= MAX_DISPLAYED_IMAGES){
+        // FIXME: Add non-overlapping magic, here. May be we need to add some
+        // fuzz on the bounds of an image, etc.
         not_displayed.forEach(function(photo){already_displayed.add(photo);});
     } else {
-        var required_count = MAX_DISPLAYED_IMAGES - already_displayed.size,
-            start = Math.floor(Math.random() * not_displayed.length),
-            end = start + required_count;
-        if (end > not_displayed.length) {
-            end = not_displayed.length;
-            start = end - required_count;
-        }
-        not_displayed.slice(start, end).forEach(function(photo){already_displayed.add(photo);});
+        already_displayed = find_non_overlapping_images(already_displayed, not_displayed, MAX_DISPLAYED_IMAGES, photo_size);
     }
     // FIXME: Setting global displayed_photos
     displayed_photos = already_displayed;
     return Array.from(already_displayed);
+};
+
+var find_non_overlapping_images = function(displayed, to_be_displayed, count, photo_size) {
+    var select_photo = function(previous, photo){
+        var overlap = false,
+            bounds = image_bounds(photo, photo_size);
+
+        for (var [_, displayed_photo] of previous.entries()) {
+            var displayed_bounds = image_bounds(displayed_photo, photo_size);
+            overlap = displayed_bounds.overlaps(bounds);
+            if (overlap){
+                break;
+            }
+        }
+        return !overlap;
+    };
+
+    var non_overlapping = new Set(),
+        displayed_ = Array.from(displayed),
+        photo, i;
+
+    // When zoom level changes, already displayed images also can start
+    // overlapping. Check and remove overlapping images. Prioritize already
+    // displayed images, over new images.
+    for (i in displayed_) {
+        if (non_overlapping.size >= count) { break; }
+        photo = displayed_[i];
+        if (select_photo(non_overlapping, photo)){
+            non_overlapping.add(photo);
+        }
+    }
+
+    for (i in to_be_displayed) {
+        if (non_overlapping.size >= count) { break; }
+        photo = to_be_displayed[i];
+        if (select_photo(non_overlapping, photo)){
+            non_overlapping.add(photo);
+        }
+    }
+    return non_overlapping;
 };
 
 var compute_face_size = function(map_){
@@ -107,8 +142,8 @@ var show_faces = function(){
     pari_map.eachLayer(remove_image_layer, pari_map);
     var zoom = pari_map.getZoom(),
         bounds = pari_map.getBounds(),
-        display_photos = filter_display_images(photos, displayed_photos, zoom, bounds),
-        face_size = compute_face_size(pari_map);
+        face_size = compute_face_size(pari_map),
+        display_photos = filter_display_images(photos, displayed_photos, bounds, face_size);
 
     display_photos.map(function(face){add_face(pari_map, face, face_size);});
 };
