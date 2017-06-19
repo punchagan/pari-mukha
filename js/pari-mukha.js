@@ -50,7 +50,8 @@ var fetch_photo_data = function(display_callback){
         })
         .then(function(parsed_data){
             console.log("No. of faces fetched: " + parsed_data.length);
-            photos = parsed_data;
+            photos = parsed_data.filter(function(photo){return photo.location;});
+            console.log("No. of faces with location info: " + photos.length);
             display_callback();
         });
 };
