@@ -27,9 +27,7 @@ var setup_map = function(map_){
             pari_attribution,
         id: 'light.grey.world'
     }).addTo(map_);
-    map_.on('zoomend', show_faces);
     map_.on('moveend', show_faces);
-    map_.fitBounds(india_bounds);
     map_.setMaxBounds(india_bounds);
 };
 
