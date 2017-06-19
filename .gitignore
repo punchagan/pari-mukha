@@ -11,5 +11,4 @@ pom.xml
 .lein-plugins/
 .repl
 .nrepl-port
-/resources/public/data/faces-*.edn
-/resources/public/data/faces-*.data
+data/faces*.data
