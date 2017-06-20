@@ -198,7 +198,6 @@
        :locations
        (map :results)
        flatten
-       (sort-by #(score-location % face) >)
        first
        :geometry
        :location))
