@@ -32,7 +32,7 @@
 (defn write-json-data
   "Writes data to a JSON file"
   [path data]
-  (spit path (json/write-str data)))
+  (spit path (with-out-str (json/pprint data :escape-slash false))))
 
 (defn pm-face-page-urls
   "Get urls of all pages with faces"
