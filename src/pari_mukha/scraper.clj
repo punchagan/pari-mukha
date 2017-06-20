@@ -128,11 +128,13 @@
   of different addresses (currently, with/without block).  We use the
   geolocation that seems most appropriate."
   [face]
-  (let [{:keys [hamlet village block district state union-territory]} face
+  (let [{:keys [village block tehsil mandal taluka district state union-territory]} face
         country "India"]
     (map make-address
-         [[hamlet village district (or state union-territory) country]
-          [hamlet village block district (or state union-territory) country]])))
+         [[village (or block tehsil mandal taluka) district (or state union-territory) country]
+          [village district (or state union-territory) country]
+          [(or block tehsil mandal taluka) district (or state union-territory) country]
+          [district (or state union-territory) country]])))
 
 (defn geolocate-address
   "Get possible locations for the given address"
@@ -160,7 +162,8 @@
         data-path (if (exists? geo-data-path) geo-data-path scraped-data-path)
         ;; FIXME: ZERO_RESULTS shit also needs to be fixed
         to-fetch (fn [f] (or (nil? (:locations f))
-                            (contains? (set (map :status (:locations f))) "OVER_QUERY_LIMIT")))
+                             (contains? (set (map :status (:locations f))) "OVER_QUERY_LIMIT")
+                             (not (contains? (set (map :status (:locations f))) "OK"))))
         faces (edn/read-string (slurp data-path))
         faces-geo-data (for [face faces]
                          (if (to-fetch face)
