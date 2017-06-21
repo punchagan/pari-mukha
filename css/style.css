@@ -3,10 +3,11 @@ body{
     width: 960px;
     margin: auto;
 }
-.leaflet-container {
+.map-container {
     height: 800px;
     width: 800px;
     margin: auto;
+    border: none;
 }
 
 .page-title {

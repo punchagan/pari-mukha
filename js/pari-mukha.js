@@ -13,7 +13,7 @@ var india_coords = [22, 81],
     pari_attribution = "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>",
     map_attribution = "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
 
-    map_container = 'map-container';
+    map_container = 'pari-map';
 
 // App global state
 var pari_map = L.map(map_container),
@@ -187,3 +187,16 @@ var remove_image_layer = function(map_layer){
 
 setup_map(pari_map);
 fetch_photo_data(show_faces);
+
+// SVG map related code
+var toggle_map = function(){
+    var map = document.querySelector('#pari-map'),
+        svg = document.querySelector('iframe');
+    if (svg.style.display === "none") {
+        map.style.display = "none";
+        svg.style.display = "block";
+    } else{
+        svg.style.display = "none";
+        map.style.display = "block";
+    }
+};
