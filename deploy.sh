@@ -10,7 +10,7 @@ echo "</body></html>" >> "${ABOUT}"
 
 # Push to GitHub
 mkdir -p resources/data/
-cp -a *.html css js resources/
+cp -a *.html css js images resources/
 cp data/faces.json resources/data/
 pushd resources/
 git init
