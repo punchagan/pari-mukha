@@ -22,3 +22,8 @@ ul.navigation {
 ul.navigation li {
     display: inline;
 }
+
+
+.pswp__caption a{
+    color: #ccc;
+}

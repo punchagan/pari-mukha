@@ -189,14 +189,96 @@ setup_map(pari_map);
 fetch_photo_data(show_faces);
 
 // SVG map related code
-var toggle_map = function(){
+
+var svg_setup = false,
+    district_photos = {},
+    toggle_map = function(){
     var map = document.querySelector('#pari-map'),
         svg = document.querySelector('iframe');
     if (svg.style.display === "none") {
         map.style.display = "none";
         svg.style.display = "block";
+        if (!svg_setup) {
+            setup_svg_map();
+        }
     } else{
         svg.style.display = "none";
         map.style.display = "block";
+    }
+};
+
+var district_click_handler = function(e){
+    var district_name = e.target.getAttribute('title'),
+        photos_ = district_photos[district_name] || [];
+    console.log(district_name);
+    console.log(photos_);
+    show_photoswipe_gallery(photos_);
+};
+
+var show_photoswipe_gallery = function(photos_){
+    var pswp_element = document.querySelectorAll('.pswp')[0],
+        items = photos_.map(function(photo){
+            return {
+                src: photo.photo,
+                w: 512,
+                h: 512,
+                title: get_popup_content(photo)
+            };
+        }),
+        options = {},
+        gallery = new PhotoSwipe( pswp_element, PhotoSwipeUI_Default, items, options);
+
+    gallery.init();
+};
+
+var svg_districts = function(){
+    var map_iframe = document.querySelector('iframe'),
+        innerDocument = map_iframe.contentDocument || map_iframe.contentWindow.document;
+    return innerDocument.querySelectorAll('path');
+};
+
+var add_svg_event_handlers = function(){
+    console.log("Adding event handlers...");
+    svg_districts().forEach(function(path){
+        path.addEventListener('click', district_click_handler);
+    });
+    handlers_added = true;
+};
+
+var group_photos_by_district = function(){
+    photos.forEach(function(photo){
+        if (district_photos[photo.district] == undefined) {
+            district_photos[photo.district] = [];
+        }
+        // FIXME: Normalize district names between faces data and SVG map!
+        district_photos[photo.district].push(photo);
+    });
+};
+
+var show_counts = function(){
+    svg_districts().forEach(function(path){
+        var district_name = path.getAttribute('title'),
+            count = (district_photos[district_name] || []).length,
+            color;
+        if (count == 0) {
+            color = 'red';
+        } else if (count < 4) {
+            color = 'orange';
+        } else {
+            color = 'green';
+        }
+        path.setAttribute('style', 'fill:'+color);
+    });
+};
+
+var setup_svg_map = function(){
+    if (photos.length > 0){
+        add_svg_event_handlers();
+        group_photos_by_district();
+        show_counts();
+        svg_setup = true;
+    } else {
+        // FIXME: Show this to the user
+        console.log("Photos not fetched, yet");
     }
 };
