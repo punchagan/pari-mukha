@@ -6,7 +6,7 @@ ABOUT=about.html
 # Create abou page
 git checkout -- "${ABOUT}"
 markdown -o html5 README.md >> "${ABOUT}"
-echo "</body></html>" >> "${ABOUT}"
+echo "</section></body></html>" >> "${ABOUT}"
 
 # Push to GitHub
 mkdir -p resources/data/
