@@ -65,10 +65,11 @@ var image_bounds = function(face, size){
 
 var add_face = function(map_, face, size){
     var imageUrl = face.photo,
-        imageBounds = image_bounds(face, size);
+        imageBounds = face.display_bounds?face.display_bounds:image_bounds(face, size);
     L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', interactive: true, face: face})
         .addTo(map_)
         .on('click', show_image_info_popup);
+    face.display_bounds = undefined;
 };
 
 var show_image_info_popup = function(){
@@ -98,7 +99,8 @@ var close_popup = function(){
 var filter_display_images = function(photos, displayed, bounds, photo_size){
     var in_bounds_photos = photos.filter(function(photo){return bounds.contains(photo.location);}),
         already_displayed = in_bounds_photos.filter(function(photo){return displayed.has(photo);}),
-        not_displayed = in_bounds_photos.filter(function(photo){return !displayed.has(photo);});
+        not_displayed = in_bounds_photos.filter(function(photo){return !displayed.has(photo);}),
+        to_be_displayed;
 
     already_displayed = new Set(already_displayed);
 
@@ -106,12 +108,13 @@ var filter_display_images = function(photos, displayed, bounds, photo_size){
         // FIXME: Add non-overlapping magic, here. May be we need to add some
         // fuzz on the bounds of an image, etc.
         not_displayed.forEach(function(photo){already_displayed.add(photo);});
+        to_be_displayed = force_directed_layout(already_displayed, photo_size);
     } else {
-        already_displayed = find_non_overlapping_images(already_displayed, not_displayed, max_photos, photo_size);
+        to_be_displayed = find_non_overlapping_images(already_displayed, not_displayed, max_photos, photo_size);
     }
     // FIXME: Setting global displayed_photos
-    displayed_photos = already_displayed;
-    return Array.from(already_displayed);
+    displayed_photos = to_be_displayed;
+    return Array.from(to_be_displayed);
 };
 
 var find_non_overlapping_images = function(displayed, to_be_displayed, count, photo_size) {
@@ -184,6 +187,113 @@ var remove_image_layer = function(map_layer){
         this.removeLayer(map_layer);
     }
 };
+
+/* Force directed layout
+
+   Images that overlap have a repulsive force pushing them away, and images away
+   from their anchor (original location) are pulled towards the anchor point.
+
+   Net force on an image gives the direction to move the image in, every move.
+   Perform some number of moves and hope that we have reached some kind of
+   equilibrium.
+
+   */
+
+var bounds_overlap = function(bounds1, bounds2) {
+    if (!bounds1.overlaps(bounds2)) {
+        return 0;
+    } else {
+        var north = Math.min(bounds1.getNorth(), bounds2.getNorth()),
+            south = Math.max(bounds1.getSouth(), bounds2.getSouth()),
+            east = Math.min(bounds1.getEast(), bounds2.getEast()),
+            west = Math.max(bounds1.getWest(), bounds2.getWest());
+        return Math.abs((north - south) * (east - west));
+    }
+};
+
+var image_moved_distance = function(anchor, center) {
+    return L.point(anchor.lng, anchor.lat).distanceTo(L.point(center.lng, center.lat));
+};
+
+var force_directed_layout = function(photos, photo_size){
+    console.log("Finding force directed layout for " + photos.size + " photos");
+    var photos_ = Array.from(photos),
+        N = 100, // Number of runs
+        anchors = photos_.map(function (x){return L.latLng (x.location);}),
+        bboxes = photos_.map(function(x){return image_bounds(x, photo_size);}),
+        result;
+
+    for (var i=0; i < N; i++){
+        result = force_moves(anchors, bboxes, photo_size);
+        anchors = result.anchors;
+        bboxes = result.bboxes;
+    }
+    bboxes.forEach(function(bbox, i){photos_[i].display_bounds=L.latLngBounds(bbox);});
+    return new Set(photos_);
+};
+
+var force_moves = function(anchors, bboxes, size){
+    var n = bboxes.length,
+        forces = bboxes.map(function(bbox, i){
+            var other_bboxes = bboxes.slice(0, i).concat(bboxes.slice(i+1, n));
+            return compute_force(bbox, anchors[i], other_bboxes, size);
+        }),
+        bboxes_ = forces.map(function(force, i){
+            var move = [force[1]*size, force[0]*size],
+                bbox = bboxes[i],
+                anchor = anchors[i],
+                ne = bbox.getNorthEast(),
+                sw = bbox.getSouthWest(),
+                new_ne = [ne.lat+move[0], ne.lng+move[1]],
+                new_sw = [sw.lat+move[0], sw.lng+move[1]];
+
+            return L.latLngBounds([new_ne, new_sw]);
+        });
+    return {anchors: anchors, bboxes: bboxes_};
+};
+
+var compute_force = function(bbox, anchor, other_bboxes, size){
+    var anchor_force = displacement_force(bbox, anchor, size),
+        overlap_forces = other_bboxes.map(function(o_bbox){return overlap_force(bbox, o_bbox, size);}),
+        sum_forces = function(x, y){return [x[0]+y[0], x[1]+y[1]];},
+        overlap_f = overlap_forces.reduce(sum_forces, [0, 0]);
+    return [anchor_force, overlap_f].reduce(sum_forces, [0, 0]);
+};
+
+var overlap_force = function(bbox1, bbox2, size){
+    var quantum = bounds_overlap(bbox1, bbox2);
+    if (quantum == 0){
+        return [0, 0];
+    }
+    var norm_quantum = quantum / (size * size),
+        fd = force_direction(bbox1.getCenter(), bbox2.getCenter());
+    return [fd[0] * norm_quantum, fd[1] * norm_quantum];
+};
+
+var displacement_force = function(bbox, anchor, size){
+    var quantum = image_moved_distance(anchor, bbox.getCenter());
+    if (quantum == 0){
+        return [0, 0];
+    }
+    var alpha = 0.1,
+        norm_quantum = quantum / size,
+        fd = force_direction(anchor, bbox.getCenter());
+    return [alpha * fd[0] * norm_quantum, alpha * fd[1] * norm_quantum];
+};
+
+var force_direction = function(point1, point2){
+    var distance = image_moved_distance(point1, point2),
+        x = point1.lng - point2.lng,
+        y = point1.lat - point2.lat;
+    if (distance === 0){
+        x = Math.random();
+        return [x, Math.sqrt(1 - x*x)];
+    } else {
+        return [x/distance, y/distance];
+    }
+};
+
+// Main ////
 
 setup_map(pari_map);
 fetch_photo_data(show_faces);
