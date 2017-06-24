@@ -293,11 +293,6 @@ var force_direction = function(point1, point2){
     }
 };
 
-// Main ////
-
-setup_map(pari_map);
-fetch_photo_data(show_faces);
-
 // SVG map related code
 
 var svg_setup = false,
@@ -392,3 +387,7 @@ var setup_svg_map = function(){
         console.log("Photos not fetched, yet");
     }
 };
+
+// Main ////
+setup_map(pari_map);
+fetch_photo_data(show_faces);
