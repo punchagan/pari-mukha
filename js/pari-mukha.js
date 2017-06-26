@@ -9,9 +9,9 @@ var india_coords = [22, 81],
     zoom_level = 5,
     max_zoom = 13,
     min_zoom = 5,
-    tile_url = "//server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    tile_url = "//server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
     pari_attribution = "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>",
-    map_attribution = "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
+    map_attribution = 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
 
     map_container = 'pari-map';
 
