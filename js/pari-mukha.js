@@ -76,6 +76,7 @@ var show_image_info_popup = function(){
     var face = this.options.face,
         latLng = [face.location.lat, face.location.lng];
     // FIXME: Global map
+    this.bringToFront();
     pari_map.openPopup(get_popup_content(face), latLng);
 };
 
