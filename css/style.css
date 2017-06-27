@@ -33,3 +33,13 @@ ul.navigation li {
 .pswp__caption a{
     color: #ccc;
 }
+
+.leaflet-div-icon {
+    text-align: center;
+}
+
+.leaflet-div-icon span{
+    position: relative;
+    top: -0.5em;
+    font-size: 0.7em;
+}

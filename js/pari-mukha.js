@@ -126,11 +126,13 @@ var show_undisplayed_markers = function(photos, displayed, bounds, grid_size){
 };
 
 var show_grid_marker = function(grid){
-    var icon = L.divIcon();
+    var html = "<span>" + grid.count + "</span>",
+        icon = L.divIcon({html: html}),
+        text = grid.count + ' undisplayed faces';
     L.marker(grid.location,
              {icon: icon,
-              title: grid.count,
-              alt: grid.count,
+              title: text,
+              alt: text,
               opacity: 0.6,
               pane: 'tilePane',
               class: 'marker.layer'
