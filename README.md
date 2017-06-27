@@ -1,7 +1,7 @@
 # pari-mukha
 
 [PARI's](https://ruralindiaonline.org/categories/faces/) facial map of India,
-on a map.
+on a map. You can view the page online [here](https://punchagan.github.io/pari-mukha/)
 
 ## Overview
 
@@ -10,8 +10,6 @@ the People's Archive of Rural India's faces project. PARI's faces project aims
 to collect 3 photographs of people from each
 district.
 [You should help](https://ruralindiaonline.org/pages/send-us-photos-help-pari-capture-the-sheer-facial-diversity-of-the-indian-people/)!
-
-You can view the page online at https://punchagan.github.io/pari-mukha/
 
 Watch this video to learn more about PARI
 
@@ -26,6 +24,10 @@ using
 <img height="30" src="https://clojure.org/images/clojure-logo-120b.png" alt="Clojure" title="Clojure"/>
 
 ## Development
+
+The code for the project is available
+at
+[https://github.com/punchagan/pari-mukha](https://github.com/punchagan/pari-mukha)
 
 You can serve the project using any simple HTTP server, for example:
 
