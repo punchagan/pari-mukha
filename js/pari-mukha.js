@@ -66,7 +66,8 @@ var image_bounds = function(face, size){
 var add_face = function(map_, face, size){
     var imageUrl = face.photo,
         imageBounds = face.display_bounds?face.display_bounds:image_bounds(face, size);
-    L.imageOverlay(imageUrl, imageBounds, {class: 'face.layer', interactive: true, face: face})
+    L.imageOverlay(imageUrl, imageBounds,
+                   {class: 'face.layer', interactive: true, face: face, alt: face.name})
         .addTo(map_)
         .on('click', show_image_info_popup);
     face.display_bounds = undefined;
