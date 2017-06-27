@@ -7,7 +7,7 @@ var india_coords = [22, 81],
     max_photos = 25,
 
     zoom_level = 5,
-    max_zoom = 13,
+    max_zoom = 12,
     min_zoom = 5,
     tile_url = "//server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
     pari_attribution = "Photos &copy; <a href=https://ruralindiaonline.org>People's Archive of Rural India</a>",
