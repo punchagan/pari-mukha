@@ -334,7 +334,7 @@ var force_direction = function(point1, point2){
         x = point1.lng - point2.lng,
         y = point1.lat - point2.lat;
     if (distance === 0){
-        x = Math.random();
+        x = Math.random()*0.1;
         return [x, Math.sqrt(1 - x*x)];
     } else {
         return [x/distance, y/distance];
