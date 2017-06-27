@@ -11,6 +11,8 @@ to collect 3 photographs of people from each
 district.
 [You should help](https://ruralindiaonline.org/pages/send-us-photos-help-pari-capture-the-sheer-facial-diversity-of-the-indian-people/)!
 
+You can view the page online at https://punchagan.github.io/pari-mukha/
+
 Watch this video to learn more about PARI
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/wYp743XsOjo" frameborder="0" allowfullscreen></iframe>
