@@ -112,10 +112,57 @@ var filter_display_images = function(photos, displayed, bounds, photo_size){
         to_be_displayed = force_directed_layout(already_displayed, photo_size);
     } else {
         to_be_displayed = find_non_overlapping_images(already_displayed, not_displayed, max_photos, photo_size);
+        show_undisplayed_markers(photos, to_be_displayed, bounds, photo_size/2);
     }
     // FIXME: Setting global displayed_photos
     displayed_photos = to_be_displayed;
     return Array.from(to_be_displayed);
+};
+
+var show_undisplayed_markers = function(photos, displayed, bounds, grid_size){
+    var undisplayed = photos.filter(function(photo){return !displayed.has(photo);}),
+        grid_counts = compute_grid_counts(bounds, undisplayed, grid_size);
+    grid_counts.map(show_grid_marker);
+};
+
+var show_grid_marker = function(grid){
+    var icon = L.divIcon();
+    L.marker(grid.location,
+             {icon: icon,
+              title: grid.count,
+              alt: grid.count,
+              opacity: 0.6,
+              pane: 'tilePane',
+              class: 'marker.layer'
+             })
+        .addTo(pari_map);
+};
+
+var compute_grid_counts = function(bounds, photos, grid_size){
+    var s = bounds.getSouth(),
+        w = bounds.getWest(),
+        counts = {},
+        grid_counts = [];
+
+    photos.forEach(function(photo){
+        var x = photo.location.lat,
+            y = photo.location.lng,
+            u = Math.floor((x-s)/grid_size),
+            v = Math.floor((y-w)/grid_size),
+            key = [u, v],
+            old_value = counts[key];
+        counts[key] = old_value === undefined?1:(old_value+1);
+    });
+
+    for (var key in counts){
+        var value = counts[key],
+            location = key.split(","),
+            x = s + grid_size * (parseInt(location[0]) + 0.5),
+            y = w + grid_size * (parseInt(location[1]) + 0.5);
+        grid_counts.push({count: value, location: [x, y]});
+    }
+
+    return grid_counts;
 };
 
 var find_non_overlapping_images = function(displayed, to_be_displayed, count, photo_size) {
@@ -173,7 +220,7 @@ var compute_face_size = function(map_){
 
 var show_faces = function(){
     // FIXME: Uses globals to do the magic!
-    pari_map.eachLayer(remove_image_layer, pari_map);
+    pari_map.eachLayer(remove_old_layers, pari_map);
     var zoom = pari_map.getZoom(),
         // -ve pad the map bounds to filter only fully visible images
         bounds = pari_map.getBounds().pad(-(photo_size/2)/map_size),
@@ -183,8 +230,8 @@ var show_faces = function(){
     display_photos.map(function(face){add_face(pari_map, face, face_size);});
 };
 
-var remove_image_layer = function(map_layer){
-    if (map_layer.options.class === 'face.layer') {
+var remove_old_layers = function(map_layer){
+    if (map_layer.options.class === 'face.layer' || map_layer.options.class === 'marker.layer') {
         this.removeLayer(map_layer);
     }
 };
