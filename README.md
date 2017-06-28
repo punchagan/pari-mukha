@@ -20,8 +20,10 @@ inspired me to try and put these faces on a map.
 
 Built with ♥
 using
-<img src="http://leafletjs.com/docs/images/logo.png" alt="Leaflet" title="Leaflet" height="30"/>
-<img height="30" src="https://clojure.org/images/clojure-logo-120b.png" alt="Clojure" title="Clojure"/>
+<a href="http://leafletjs.com/" target="_blank"><img src="http://leafletjs.com/docs/images/logo.png" alt="Leaflet" title="Leaflet" height="30"/></a>
+<a href="https://clojure.org/" target="_blank"><img height="30" src="https://clojure.org/images/clojure-logo-120b.png" alt="Clojure" title="Clojure"/></a>
+<a href="https://v4-alpha.getbootstrap.com/" target="_blank"><img height="30" src="https://v4-alpha.getbootstrap.com/assets/brand/bootstrap-social-logo.png" alt="Bootstrap" title="Bootstrap"/></a>
+
 
 ## Development
 
